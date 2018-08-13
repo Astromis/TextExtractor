@@ -18,5 +18,8 @@ pdf_extractor.o: pdf_extractor.cpp
 tesseract_wp.o: tesseract_wp.cpp
 	$(CC) $(CFLAGS) -ltesseract tesseract_wp.cpp 
 
+zcompressor.c:
+	$(CC) $(CFLAGS) -lz zcompressor.c
+	
 clean:
-	rm -rf *.o test
+rm -rf *.o test
