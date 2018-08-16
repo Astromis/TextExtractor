@@ -1,23 +1,33 @@
+//#include <regex>
+#include "czip.h"
 #include <string>
-#include <regexp>
-#include <zip.h>
+//#include <boost/regex.hpp>
+#include <regex>
 
-class DocxReader::Zip
+
+// g++ test_maim.cpp docx_reader.cpp zip.cpp -std=c++0x -lzip -lboost_regex -o test_zip
+
+
+using namespace std;
+//using namespace boost;
+
+class DocxReader : public Zip
 {
     //content file - file within zip file
     private:
-        const std::regex re;
+        regex re;
+        char* contents;
 
-        void ParseXml();
 
     public:
         void SetRegExp(string regex);
-
+        void ParseXml();
         DocxReader();
         ~DocxReader();
         DocxReader(const char *filepath, string reg = "<w:t[А-Яа-яA-Za-z0-9 > \":=,.;]+</w:t>");
+        
         char * GetText();
 
         
 
-}
+};
