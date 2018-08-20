@@ -4,37 +4,15 @@ using namespace std;
 
 //g++ test_poppler.cpp -std=c++11 pnmwritter.cpp -ltesseract -llept -lpoppler-cpp
 
-//Tesseract wrapper for getting text
-/* void gettext(char *img, size_t size)
-{
-    PIX * image__;
-    if ((image__ = pixReadMemPnm((unsigned char *)img, size)) == NULL)
-    {
-        printf("Error has occured");
-    }
 
-    char *outText;
-    
-    tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
-    // Initialize tesseract-ocr with English, without specifying tessdata path
-    if (api->Init(NULL, "rus")) {
-        fprintf(stderr, "Could not initialize tesseract.\n");
-        exit(1);
-    }
-
-     //Open input image with leptonica library
-
-    api->SetImage(image__);
-    // Get OCR result
-    outText = api->GetUTF8Text();
-    printf("OCR output:\n%s", outText);
-
-    // Destroy used object and release memory
-    api->End();
-    delete [] outText;
-    pixDestroy(&image__);
-} */
-
+/**
+ * @brief Transfrom image to PNB
+ * 
+ * @param img [in] poopler object of image
+ * @param transform_img [in|out] buffer, in which will save pnb image
+ * @return true if transformation complite
+ * @return false 
+ */
 bool img_transform(poppler::image img, char *transform_img)
 {
     int preable = 0;
@@ -51,7 +29,12 @@ bool img_transform(poppler::image img, char *transform_img)
         hptr += img.bytes_per_row();
     }
 }
-
+/**
+ * @brief Recognize text from rendered pdf page
+ * 
+ * @param pagenum [in] Number of page
+ * @param doc [in] poppler object of pdf document
+ */
 void pdf_txt_recog(int pagenum, poppler::document* doc)
 {
     poppler::image img;
@@ -68,6 +51,12 @@ void pdf_txt_recog(int pagenum, poppler::document* doc)
     delete pnm_img;
 }
 
+/**
+ * @brief Get the text from pdf object. Function, that get text layer from djvu is embedded in this.
+ * 
+ * @param pathfile [in] path to file
+ * @param pagenum [in] 
+ */
 void get_text_from_pdf(const char* pathfile, int pagenum)
 {
     

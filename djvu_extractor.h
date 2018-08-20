@@ -29,8 +29,8 @@ void handle(int wait);
 void  die(const char *fmt, ...);
 
 void render(ddjvu_page_t *page, int pageno);
-void dopage_text_recog(int pageno);
-void dopage_extract_text(miniexp_t r, const char * detail, int escape);
-void get_text_from_djvu(const char* filename, int pagenum, char* detail);
+void dopage_text_recognition(int pageno);
+void dopage_text_extract(miniexp_t r, const char * detail, int escape);
+void get_text_from_djvu(const char* filename, int pagenum, char* detail = "page");
 
 #endif

@@ -18,8 +18,15 @@ pdf_extractor.o: pdf_extractor.cpp
 tesseract_wp.o: tesseract_wp.cpp
 	$(CC) $(CFLAGS) -ltesseract tesseract_wp.cpp 
 
-zcompressor.c:
-	$(CC) $(CFLAGS) -lz zcompressor.c
+#zcompressor.c:
+#	$(CC) $(CFLAGS) -lz zcompressor.c
+
+czip.o: czip.cpp
+	$(CC) $(CFlAGS) -lzip czip.cpp
 	
+docx_reader.o : docx_reader.cpp
+	$(CC) $(CFLAGS) docx_reader.cpp
+	
+
 clean:
 rm -rf *.o test

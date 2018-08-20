@@ -3,7 +3,13 @@
 
 using namespace std;
 
-//Tesseract wrapper for getting text
+//
+/**
+ * @brief Basic tesseract wrapper for getting text
+ * 
+ * @param img [in] buffer that contain image data
+ * @param size [in] size of buffer
+ */
 void gettext(char *img, size_t size)
 {
     PIX * image__;

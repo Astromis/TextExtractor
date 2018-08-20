@@ -169,6 +169,12 @@ die(const char *fmt, ...)
   exit(10);
 }
 
+/**
+ * @brief Render page from djvu. Currently it rander to PNM only
+ * 
+ * @param page [in] djvulibre object
+ * @param pageno 
+ */
 void
 render(ddjvu_page_t *page, int pageno)
 {
@@ -312,9 +318,12 @@ render(ddjvu_page_t *page, int pageno)
   
 }
 
-
-void
-dopage_text_recog(int pageno)
+/**
+ * @brief Regonize text from rendered page
+ * 
+ * @param pageno [in] page number
+ */
+void dopage_text_recognition(int pageno)
 {
   ddjvu_page_t *page;
   /* Decode page */
@@ -342,7 +351,14 @@ dopage_text_recog(int pageno)
 
 }
 
-void dopage_extract_text(miniexp_t r, const char * detail, int escape)
+/**
+ * @brief Extract text layer from djvu
+ * 
+ * @param r [in] djvuLibere object that contain text
+ * @param detail [in] see djvu doc
+ * @param escape [in] see djvu doc
+ */
+void dopage_text_extract(miniexp_t r, const char * detail, int escape)
 {
   if (detail)
     {
@@ -382,6 +398,13 @@ void dopage_extract_text(miniexp_t r, const char * detail, int escape)
     else printf("Page has not contain a text\n");
 }
 
+/**
+ * @brief Get the text from djvu object
+ * 
+ * @param filename [in] Path to file to be extracted
+ * @param pagenum [in] Number of page, -1 process all pages
+ * @param detail [in] defualt = "page" see djvu doc
+ */
 void get_text_from_djvu(const char* filename, int pagenum, char* detail)
 {
   int maxpages = 0;
@@ -406,9 +429,9 @@ void get_text_from_djvu(const char* filename, int pagenum, char* detail)
     {
         if((r = ddjvu_document_get_pagetext(doc,i,lvl)) == miniexp_nil)
         {
-          dopage_text_recog(i);
+          dopage_text_recognition(i);
         }
-        else dopage_extract_text(r, lvl, 0);
+        else dopage_text_extract(r, lvl, 0);
         //handle(TRUE);
     }
   }
@@ -419,11 +442,11 @@ void get_text_from_djvu(const char* filename, int pagenum, char* detail)
     if((r = ddjvu_document_get_pagetext(doc,pagenum,lvl)) == miniexp_nil)
     {
       printf("Try to recognize...\n");
-      dopage_text_recog(pagenum);
+      dopage_text_recognition(pagenum);
     }
       else 
       { 
-        dopage_extract_text(r, lvl, 0);
+        dopage_text_extract(r, lvl, 0);
       }
 
   } 
