@@ -176,7 +176,7 @@ die(const char *fmt, ...)
  * @param pageno 
  */
 void
-render(ddjvu_page_t *page, int pageno)
+render(ddjvu_page_t *page, int pageno, char* pPlainText)
 {
   size_t size = 0;
   char img[7000000];
@@ -311,7 +311,7 @@ render(ddjvu_page_t *page, int pageno)
             size += rowsize;
         }
 
-    gettext(img, size);    
+  pPlainText = gettext(img, size);    
   /* Free */
   ddjvu_format_release(fmt);
   free(image);
@@ -323,7 +323,7 @@ render(ddjvu_page_t *page, int pageno)
  * 
  * @param pageno [in] page number
  */
-void dopage_text_recognition(int pageno)
+void dopage_text_recognition(int pageno, char* pPlainText)
 {
   ddjvu_page_t *page;
   /* Decode page */
@@ -346,7 +346,7 @@ void dopage_text_recognition(int pageno)
   timingdata[1] = ticks();
 
   /* Render */
-  render(page, pageno);
+  render(page, pageno, pPlainText);
   ddjvu_page_release(page);
 
 }
@@ -358,7 +358,7 @@ void dopage_text_recognition(int pageno)
  * @param detail [in] see djvu doc
  * @param escape [in] see djvu doc
  */
-void dopage_text_extract(miniexp_t r, const char * detail, int escape)
+char* dopage_text_extract(miniexp_t r, const char * detail, int escape)
 {
   if (detail)
     {
@@ -374,9 +374,11 @@ void dopage_text_extract(miniexp_t r, const char * detail, int escape)
     }
   else if ((r = miniexp_nth(5, r)) && miniexp_stringp(r))
     {
-      const char *s = miniexp_to_str(r); 
+      char *s = miniexp_to_str(r); 
+      return s;
       if (! escape)
         fputs(s, stdout);
+        return s;
       else
         {
           unsigned char c;
@@ -405,8 +407,9 @@ void dopage_text_extract(miniexp_t r, const char * detail, int escape)
  * @param pagenum [in] Number of page, -1 process all pages
  * @param detail [in] defualt = "page" see djvu doc
  */
-void get_text_from_djvu(const char* filename, int pagenum, char* detail)
+char* get_text_from_djvu(const char* filename, int pagenum, char* detail)
 {
+  char* pPlainText;
   int maxpages = 0;
   miniexp_t r = miniexp_nil;
   const char *lvl = (detail) ? detail : "page";
@@ -429,9 +432,9 @@ void get_text_from_djvu(const char* filename, int pagenum, char* detail)
     {
         if((r = ddjvu_document_get_pagetext(doc,i,lvl)) == miniexp_nil)
         {
-          dopage_text_recognition(i);
+          dopage_text_recognition(i, pPlainText);
         }
-        else dopage_text_extract(r, lvl, 0);
+        else pPlainText = dopage_text_extract(r, lvl, 0);
         //handle(TRUE);
     }
   }
@@ -442,11 +445,11 @@ void get_text_from_djvu(const char* filename, int pagenum, char* detail)
     if((r = ddjvu_document_get_pagetext(doc,pagenum,lvl)) == miniexp_nil)
     {
       printf("Try to recognize...\n");
-      dopage_text_recognition(pagenum);
+      dopage_text_recognition(pagenum, pPlainText);
     }
       else 
       { 
-        dopage_text_extract(r, lvl, 0);
+        dopage_text_extract(r, lvl, 0, pPlainText);
       }
 
   } 
@@ -455,6 +458,7 @@ void get_text_from_djvu(const char* filename, int pagenum, char* detail)
     ddjvu_document_release(doc);
   if (ctx)
     ddjvu_context_release(ctx);
+    return pPlainText;
 }
 
 // g++ GetTextFromDjvu.cpp -ltesseract -llept -ltiff -ldjvulibre

@@ -18,23 +18,23 @@ inline string TextExtractor::GetExt(string path)
 
 }*/
 
-void TextExtractor::GetText(char* filepath)
+char* TextExtractor::GetText(char* filepath)
 {
     string ext = GetExt((string)filepath);
 
     if(ext == ".djvu")
     {
-        get_text_from_djvu(filepath, -1)
+        return get_text_from_djvu(filepath, -1)
     }
     else if(ext == ".pdf")
     {
-        get_text_from_pdf(filepath, -1);
+        return get_text_from_pdf(filepath, -1);
 
     }
     else if(".docx")
     {
         DocxReader dr(filepath);
-        dr.GetText();
+        return dr.GetText();
     }
 /*     else if(".doc")
     {
@@ -42,11 +42,26 @@ void TextExtractor::GetText(char* filepath)
     } */
 }
 
-void TextExtractor::GetTextFromList(vector<string> &q)
+void TextExtractor::GetTextFromFiles(vector<string> &q)
 {
     for(auto file: q)
-        GetText(file)
+        vecTexts.push_back(GetText(file));
 }
 
-//void TextExtractor::PutTextInFiles();
+//TODO: Name generator
+//  Zip archivate condition
+void TextExtractor::Text2File(char* text, string rootpath)
+{
+    ofstream fout;
+    fout.open(rootpath + "name"); 
+    fout<<text;
+    fout.close();
+    free(text);
+}
+
+void TextExtractor::PutTextsToFiles()
+{
+    for(auto txt:vecTexts)
+        Text2File(txt);
+}
 //This function take a pointer on array of pointers that point to memory, allocated for text. 

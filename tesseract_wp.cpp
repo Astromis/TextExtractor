@@ -10,7 +10,7 @@ using namespace std;
  * @param img [in] buffer that contain image data
  * @param size [in] size of buffer
  */
-void gettext(char *img, size_t size)
+char* gettext(char *img, size_t size)
 {
     PIX * image__;
     if ((image__ = pixReadMemPnm((unsigned char *)img, size)) == NULL)
@@ -38,4 +38,5 @@ void gettext(char *img, size_t size)
     api->End();
     delete [] outText;
     pixDestroy(&image__);
+    return outText;
 }

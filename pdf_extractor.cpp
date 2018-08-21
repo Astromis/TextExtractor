@@ -35,8 +35,9 @@ bool img_transform(poppler::image img, char *transform_img)
  * @param pagenum [in] Number of page
  * @param doc [in] poppler object of pdf document
  */
-void pdf_txt_recog(int pagenum, poppler::document* doc)
+char* pdf_txt_recog(int pagenum, poppler::document* doc)
 {
+    char* pPlainText;
     poppler::image img;
     poppler::page_renderer render;
     char temp [64]; //crutch!!
@@ -47,8 +48,9 @@ void pdf_txt_recog(int pagenum, poppler::document* doc)
     img_size = img.height() * img.width()*3 + prem_len;
     char * pnm_img =  new char [img_size];
     img_transform(img, pnm_img);
-    gettext(pnm_img, img_size);
+    pPlainText = gettext(pnm_img, img_size);
     delete pnm_img;
+    return pPlainText;
 }
 
 /**
