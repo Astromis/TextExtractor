@@ -374,11 +374,13 @@ char* dopage_text_extract(miniexp_t r, const char * detail, int escape)
     }
   else if ((r = miniexp_nth(5, r)) && miniexp_stringp(r))
     {
-      char *s = miniexp_to_str(r); 
+      char *s = (char *)miniexp_to_str(r); 
       return s;
       if (! escape)
+      {
         fputs(s, stdout);
         return s;
+      }
       else
         {
           unsigned char c;
@@ -416,10 +418,10 @@ char* get_text_from_djvu(const char* filename, int pagenum, char* detail)
 
   /* Create context and document */
   programname = filename;
-  if (! (ctx = ddjvu_context_create(programname)))
+  if (! (ctx = ddjvu_context_create("test")))
     die(i18n("Cannot create djvu context."));
-  if (! (doc = ddjvu_document_create_by_filename(ctx, inputfilename, TRUE)))
-    die(i18n("Cannot open djvu document '%s'."), inputfilename);
+  if (! (doc = ddjvu_document_create_by_filename(ctx, filename, TRUE)))
+    die(i18n("Cannot open djvu document '%s'."), filename);
   while (! ddjvu_document_decoding_done(doc))
     handle(TRUE);
   if (ddjvu_document_decoding_error(doc))
@@ -449,7 +451,7 @@ char* get_text_from_djvu(const char* filename, int pagenum, char* detail)
     }
       else 
       { 
-        dopage_text_extract(r, lvl, 0, pPlainText);
+        pPlainText = dopage_text_extract(r, lvl, 0);
       }
 
   } 

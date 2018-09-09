@@ -54,7 +54,7 @@ char* pdf_txt_recog(int pagenum, poppler::document* doc)
 }
 
 /**
- * @brief Get the text from pdf object. Function, that get text layer from djvu is embedded in this.
+ * @brief Get the text from pdf object. Function, that get text layer from djvu is embedded in it.
  * 
  * @param pathfile [in] path to file
  * @param pagenum [in] 
@@ -68,7 +68,7 @@ void get_text_from_pdf(const char* pathfile, int pagenum)
     
     poppler::ustring txt;
     
-    if(pagenum)
+    if(pagenum != -1)
     {
         //cout << doc->create_page(i)->text().to_latin1().c_str() << endl;
         txt = doc->create_page(pagenum)->text();

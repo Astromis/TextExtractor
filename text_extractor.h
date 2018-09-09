@@ -13,8 +13,10 @@ class TextExtractor
     public:
     TextExtractor();
     ~TextExtractor();
-    void GetText(char* filepath);
+    char* GetText(char* filepath);
     void GetTextFromList(vector<string> &q);
     string GetExt(string path);
+    void PutTextsToFiles();
+    void Text2File(char* text, string rootpath);
 };
 

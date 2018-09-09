@@ -1,0 +1,5 @@
+requirements:
+libzip : https://libzip.org/download/
+poppler :
+djvulibre
+tesseract

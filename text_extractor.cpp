@@ -4,6 +4,10 @@ TextExtractor::TextExtractor()
 {
 }
 
+TextExtractor::~TextExtractor()
+{
+}
+
 inline string TextExtractor::GetExt(string path)
 {
     size_t start = path.rfind(".");
@@ -24,11 +28,11 @@ char* TextExtractor::GetText(char* filepath)
 
     if(ext == ".djvu")
     {
-        return get_text_from_djvu(filepath, -1)
+        return get_text_from_djvu(filepath, -1);
     }
     else if(ext == ".pdf")
     {
-        return get_text_from_pdf(filepath, -1);
+         get_text_from_pdf(filepath, -1);
 
     }
     else if(".docx")
@@ -42,15 +46,15 @@ char* TextExtractor::GetText(char* filepath)
     } */
 }
 
-void TextExtractor::GetTextFromFiles(vector<string> &q)
+/* void TextExtractor::GetTextFromFiles(vector<string> &q)
 {
     for(auto file: q)
         vecTexts.push_back(GetText(file));
-}
+} */
 
 //TODO: Name generator
 //  Zip archivate condition
-void TextExtractor::Text2File(char* text, string rootpath)
+/* void TextExtractor::Text2File(char* text, string rootpath)
 {
     ofstream fout;
     fout.open(rootpath + "name"); 
@@ -63,5 +67,5 @@ void TextExtractor::PutTextsToFiles()
 {
     for(auto txt:vecTexts)
         Text2File(txt);
-}
+} */
 //This function take a pointer on array of pointers that point to memory, allocated for text. 

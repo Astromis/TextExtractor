@@ -4,6 +4,6 @@
 #include <tesseract/baseapi.h>
 #include <leptonica/allheaders.h>
 
-void gettext(char *img, size_t size);
+char* gettext(char *img, size_t size);
 
 #endif

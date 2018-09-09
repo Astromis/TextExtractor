@@ -12,7 +12,7 @@
 
 
 void get_text_from_pdf(const char* pathfile, int pagenum);
-void pdf_txt_recog(int pagenum, poppler::document* doc);
+char* pdf_txt_recog(int pagenum, poppler::document* doc);
 bool img_transform(poppler::image img, char *transform_img);
 
 #endif
