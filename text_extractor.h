@@ -1,7 +1,7 @@
 #include "djvu_extractor.h"
 #include "docx_reader.h"
 #include "pdf_extractor.h"
-#include <queue>
+#include <string>
 #include <fstream>
 
 class TextExtractor
@@ -9,6 +9,7 @@ class TextExtractor
     private:
     string ext;
     vector<char *> vecTexts;
+    vector<string> source_names;
 
     public:
     TextExtractor();
@@ -17,6 +18,5 @@ class TextExtractor
     void GetTextFromList(vector<string> &q);
     string GetExt(string path);
     void PutTextsToFiles();
-    void Text2File(char* text, string rootpath);
 };
 

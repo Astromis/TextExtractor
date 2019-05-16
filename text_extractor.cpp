@@ -46,26 +46,33 @@ char* TextExtractor::GetText(char* filepath)
     } */
 }
 
-/* void TextExtractor::GetTextFromFiles(vector<string> &q)
+void TextExtractor::GetTextFromList(vector<string> &q)
 {
-    for(auto file: q)
-        vecTexts.push_back(GetText(file));
-} */
-
-//TODO: Name generator
-//  Zip archivate condition
-/* void TextExtractor::Text2File(char* text, string rootpath)
-{
-    ofstream fout;
-    fout.open(rootpath + "name"); 
-    fout<<text;
-    fout.close();
-    free(text);
+    for(auto& i: q)
+    {
+        vecTexts.push_back(make_pair(GetText(i), i));
+    }
 }
 
-void TextExtractor::PutTextsToFiles()
+string name_generator(string src_name)
 {
-    for(auto txt:vecTexts)
-        Text2File(txt);
-} */
-//This function take a pointer on array of pointers that point to memory, allocated for text. 
+    static int count = -1;
+    count++;
+    return tostring(count) + "_recognized_" + src_name; 
+}
+
+//TODO:
+//  Zip archivate condition
+
+void TextExtractor::PutTextsToFiles(string rootpath)
+{
+    for(auto i: vecTexts)
+    {
+        ofstream fout;
+        fout.open(rootpath + name_generator(i.second)); 
+        fout<<i.first;
+        fout.close();
+        free(text);
+    }
+
+}
