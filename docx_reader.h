@@ -21,12 +21,12 @@ class DocxReader : public Zip
 
     public:
         void SetRegExp(string regex);
-        void ParseXml();
+        void ParseXml(string &data);
         DocxReader();
         ~DocxReader();
-        DocxReader(const char *filepath, string reg = "<w:t[А-Яа-яA-Za-z0-9 > \":=,.;]+</w:t>");
+        DocxReader(const char *filepath, string reg = "<w:t[А-Яа-яA-Za-z0-9>\":=,.;]+</w:t>");
         
-        char * GetText();
+        void GetText(string& data);
 
         
 

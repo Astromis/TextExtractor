@@ -9,14 +9,16 @@ class TextExtractor
     private:
     string ext;
     vector<char *> vecTexts;
+    vector<pair<string, string> > vecTextsNames;
     vector<string> source_names;
+    //char* pWordData;
 
     public:
     TextExtractor();
     ~TextExtractor();
-    char* GetText(char* filepath);
+    void GetText(string filepath, string& WordData);
     void GetTextFromList(vector<string> &q);
     string GetExt(string path);
-    void PutTextsToFiles();
+    void PutTextsToFiles(string);
 };
 

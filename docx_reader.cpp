@@ -16,26 +16,30 @@ DocxReader::~DocxReader()
     cout<<"Summon deconstr of docx"<<endl;
 }
 
-char * DocxReader::GetText()
+void  DocxReader::GetText(string &data)
 {
-    contents = ReadData("word/document.xml");
-    ParseXml();
+    ReadData("word/document.xml", data);
+    ParseXml(data);
     //It will able to done with regexp, because parsing xml is hard task for my brain.
     //Probably regexp <w:t[А-Яа-яA-Za-z0-9 > \":=,.;]+</w:t>
     // https://eax.me/cpp-regex/
     // https://eax.me/regular-expr/
-
-    return contents;
 }
 
-void DocxReader::ParseXml()
+void DocxReader::ParseXml(string& data)
 {
     smatch m;
     string tmp = (string)contents;
 
-    regex_search(tmp, m, re);
+    /* regex_search(data, m, re);
     for (auto x:m) std::cout << x << "test ";
-    std::cout << std::endl;
+    std::cout << std::endl; */
+    while (regex_search (data, m, re))
+    {
+        for (auto x:m) std::cout << x << " ";
+        std::cout << std::endl;
+        //data = m.suffix().str();
+    }
     
     //s = m.suffix().str()
 /*     regex xRegEx("<w:t[а-яА-Я0-9 >:=,.;]+</w:t>");

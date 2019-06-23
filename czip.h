@@ -10,7 +10,7 @@ class Zip
         // I have suspicions that string class is better choice for storage string info.  
         char *content_file_name;
         const char* filepath;
-        char *data;
+        //char *data;
         struct zip_stat st;
         //file within zip file
         zip_file *content_f;
@@ -22,7 +22,7 @@ class Zip
         Zip();
         Zip(const char* fname);
         ~Zip();
-        char* ReadData(char* cfname);
+        void ReadData(char* cfname, std::string & data);
         // Empty
         void Create(char fname);
         int Find(char* fname);
