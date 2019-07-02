@@ -3,7 +3,7 @@
 int main()
 {
     TextExtractor tx;
-    vector<string> files = {"/home/igor/git_projects/test/text_extractor/examples/test.docx"};
+    vector<string> files = {"./examples/test.docx"};
     tx.GetTextFromList(files);
     tx.PutTextsToFiles("./tests/");
     //tx.GetText("./examples/test.docx");

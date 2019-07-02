@@ -167,7 +167,7 @@
 #define HAVE_SYS_WAIT_H 1
 
 /* Define if you have libtiff. */
-#define HAVE_TIFF 1
+#define HAVE_TIFF 0
 
 /* define if the compiler recognizes typename */
 #define HAVE_TYPENAME 1
