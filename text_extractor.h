@@ -16,7 +16,7 @@ class TextExtractor
     public:
     TextExtractor();
     ~TextExtractor();
-    void GetText(string filepath, string& WordData);
+    char * GetText(string filepath, string& WordData);
     void GetTextFromList(vector<string> &q);
     string GetExt(string path);
     void PutTextsToFiles(string);

@@ -26,23 +26,23 @@ inline string TextExtractor::GetExt(string path)
 
 }*/
 
-void TextExtractor::GetText(string filepath, string& WordData)
+char * TextExtractor::GetText(string filepath, string& WordData)
 {
     string ext = GetExt(filepath.c_str());
     if(ext == ".djvu")
     {
-        //return get_text_from_djvu(filepath.c_str(), -1);
+        return get_text_from_djvu(filepath.c_str(), -1);
     }
     else if(ext == ".pdf")
     {
-         //get_text_from_pdf(filepath.c_str(), -1);
+        get_text_from_pdf(filepath.c_str(), -1);
 
     }
     else if(".docx")
     {
         
         DocxReader dr(filepath.c_str());
-        dr.GetText(WordData);
+        return dr.GetText();//WordData
     }
 /*     else if(".doc")
     {

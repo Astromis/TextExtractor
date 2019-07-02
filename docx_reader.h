@@ -26,7 +26,7 @@ class DocxReader : public Zip
         ~DocxReader();
         DocxReader(const char *filepath, string reg = "<w:t[А-Яа-яA-Za-z0-9>\":=,.;]+</w:t>");
         
-        void GetText(string& data);
+        char* GetText();//string& data
 
         
 

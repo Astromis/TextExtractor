@@ -16,10 +16,12 @@ DocxReader::~DocxReader()
     cout<<"Summon deconstr of docx"<<endl;
 }
 
-void  DocxReader::GetText(string &data)
+char*  DocxReader::GetText()//string &data
 {
+    char ** data;
     ReadData("word/document.xml", data);
-    ParseXml(data);
+    cout<<*data;
+    //ParseXml(data);
     //It will able to done with regexp, because parsing xml is hard task for my brain.
     //Probably regexp <w:t[А-Яа-яA-Za-z0-9 > \":=,.;]+</w:t>
     // https://eax.me/cpp-regex/

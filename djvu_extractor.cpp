@@ -61,10 +61,10 @@
 #include "djvu_extractor.h"
 #include "tesseract_wp.h" 
 
-#if HAVE_PUTC_UNLOCKED
+//#if HAVE_PUTC_UNLOCKED
 # undef putc
 # define putc putc_unlocked
-#endif
+//#endif
 
 /* Some day we'll redo i18n right. */
 #ifndef i18n
@@ -76,11 +76,11 @@
 unsigned long 
 ticks(void)
 {
-#ifdef UNIX
+//#ifdef UNIX
   struct timeval tv;
   if (gettimeofday(&tv, NULL) >= 0)
     return (unsigned long)(((tv.tv_sec & 0xfffff)*1000)+(tv.tv_usec/1000));
-#endif
+//#endif
   return 0;
 }
 
@@ -108,13 +108,13 @@ const char  *inputfilename = 0;
 const char  *outputfilename = 0;
 
 char *pagefilename = 0;
-#if HAVE_TIFF2PDF
+//#if HAVE_TIFF2PDF
 char *tempfilename = 0;
 int tiffd = -1;
-#endif
-#if HAVE_TIFF
-TIFF *tiff = 0;
-#endif
+//#endif
+//#if HAVE_TIFF
+//TIFF *tiff = 0;
+//#endif
 FILE *fout = 0;
 
 

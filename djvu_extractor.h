@@ -2,7 +2,7 @@
 #define DJVU_EXTRACTOR_H
 
 
-# include "djvu_config.h"
+//# include "djvu_config.h"
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -12,12 +12,12 @@
 #include <locale.h>
 #include <fcntl.h>
 #include <errno.h>
-#undef HAVE_TIFF2PDF
-#ifdef UNIX
+//#undef HAVE_TIFF2PDF
+//#ifdef UNIX
 # include <sys/time.h>
 # include <sys/types.h>
 # include <unistd.h>
-#endif
+//#endif
 
 
 #include "libdjvu/ddjvuapi.h"

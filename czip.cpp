@@ -31,14 +31,14 @@ Zip::~Zip()
     //if(data != NULL) delete[] data;
 }
 
-void Zip::ReadData(char* cfname, string &data)
+void Zip::ReadData(char* cfname, char** data)
 {
     if(content_f != NULL) zip_fclose(content_f);
     content_file_name = cfname;
     zip_stat_init(&st);
     zip_stat(z, content_file_name, 0, &st);
     //Allocalte memory for file data
-    char* cdata = (char *)malloc(st.size);
+    *data = (char *)malloc(st.size);
     //Get pointer on file in archive 
     content_f = zip_fopen(z, content_file_name, 0);
     if(content_f == NULL)
@@ -47,13 +47,13 @@ void Zip::ReadData(char* cfname, string &data)
         //return NULL;
     }
     //Read data from inner file
-    if(zip_fread(content_f, cdata, st.size) == -1)
+    if(zip_fread(content_f, *data, st.size) == -1)
     {
         cout<<"Cant read the data"<<endl;
         //exit(1);
     }
     zip_fclose(content_f);
-    data = string(cdata);
+   // data = string(cdata);
     //cout<<data;
     content_f = NULL;
 }
