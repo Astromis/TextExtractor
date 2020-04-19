@@ -16,11 +16,13 @@ sudo apt-get install libzip-dev libpoppler-cpp-dev libdjvulibre-dev libtesseract
 ```
 After that jsut type **make** in the root directory. If there is fatal error "No such files or directory", make sure the libraries heades has installed in /usr/unclude/ or you can change that in the make file
 
-You, also, need the data for training the Tesseract. It can be downloaded from official wiki on github [here](https://github.com/tesseract-ocr/tesseract/wiki/Data-Files). Having done donwloading, set the environmental variable:
+You, also, need the data for the Tesseract. You can find it in *tessdata* directory of the repo or you can download it from official wiki on github [here](https://github.com/tesseract-ocr/tesseract/wiki/Data-Files). Having done donwloading, set the environmental variable:
 ```bash
 export TESSDATA_PREFIX=/path/to/downloaded/data
 ```
-In this directory, create one more dir named *tessdata* and place trained data there. If you want to use CLI version, you can also put the data into /usr/share/tesseract-ocr/tessdata/ and specify the language trough the -l key. Also, you can specify -c tessedit_write_images=true in order to see the result of image preprocessing.
+In this directory, create one more dir named *tessdata* and place trained data there. 
+
+If you want to use CLI version, you can also put the data into /usr/share/tesseract-ocr/tessdata/ and specify the language trough the -l key. Also, you can specify -c tessedit_write_images=true in order to see the result of image preprocessing.
 
 ## Further work
 * Add supporting doc files
