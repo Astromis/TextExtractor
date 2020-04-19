@@ -12,7 +12,7 @@ An extraction consists of two steps: if text layer exists then extract it. If do
 ## Requirement libraries and installation:
 List of libraries:
 ```bash
-    sudo apt-get install libzip-dev libpoppler-cpp-dev libdjvulibre-dev libtesseract-dev libleptonica-dev
+sudo apt-get install libzip-dev libpoppler-cpp-dev libdjvulibre-dev libtesseract-dev libleptonica-dev libtiff-dev
 ```
 After that jsut type **make** in the root directory. If there is fatal error "No such files or directory", make sure the libraries heades has installed in /usr/unclude/ or you can change that in the make file
 
@@ -20,7 +20,7 @@ You, also, need the data for training the Tesseract. It can be downloaded from o
 ```bash
 export TESSDATA_PREFIX=/path/to/downloaded/data
 ```
-In this directory, create one more dir named *tessdata* and place trained data there.
+In this directory, create one more dir named *tessdata* and place trained data there. If you want to use CLI version, you can also put the data into /usr/share/tesseract-ocr/tessdata/ and specify the language trough the -l key. Also, you can specify -c tessedit_write_images=true in order to see the result of image preprocessing.
 
 ## Further work
 * Add supporting doc files
