@@ -26,65 +26,218 @@ inline string TextExtractor::GetExt(string path)
 
 }*/
 
-char * TextExtractor::GetText(string filepath, string& WordData)
-{
-    string ext = GetExt(filepath.c_str());
-    if(ext == ".djvu")
-    {
-        return get_text_from_djvu(filepath.c_str(), -1);
-    }
-    else if(ext == ".pdf")
-    {
-        get_text_from_pdf(filepath.c_str(), -1);
-
-    }
-    else if(".docx")
-    {
-        
-        DocxReader dr(filepath.c_str());
-        return dr.GetText();//WordData
-    }
-/*     else if(".doc")
-    {
-
-    } */
-}
-
-void TextExtractor::GetTextFromList(vector<string> &q)
-{
-    string data;
-    for(auto& i: q)
-    {
-        GetText(i, data);
-        vecTextsNames.push_back(make_pair(data, i));
-    }
-}
-
 string name_generator(string src_name)
 {
     static int count = -1;
     count++;
     size_t start = src_name.rfind("/");
     string file_name = src_name.substr(start + 1, src_name.length());
-    file_name = file_name.substr(0, file_name.rfind("."));
+    //file_name = file_name.substr(0, file_name.rfind("."));
     return std::to_string(count) + "_recognized_" + file_name + ".txt"; 
+}
+
+bool write_to_file(string filename, char* pTextData)
+{
+    ofstream file;
+    file.open(filename);
+    if (!file.is_open())
+    {
+        cout<< "Cannot open the file for writing! "<< filename << std::endl;
+        return false;
+    } 
+    file<<pTextData;
+    file.close();
+    return true;
+}
+
+
+bool TextExtractor::create_doc_djvu(string filepath)
+{
+    if (! (ctx_djvu = ddjvu_context_create("test")))
+    {
+        cout<<"Cannot create djvu context."<<endl;
+        failed_documents.push_back(filepath);
+        return false;
+    }
+    if (! (pDoc_djvu = ddjvu_document_create_by_filename(ctx_djvu, filepath.c_str(), TRUE)))
+    {
+        cout<<"Cannot open djvu document"<<filepath<<endl;
+        failed_documents.push_back(filepath);
+        return false;
+    }
+    while (! ddjvu_document_decoding_done(pDoc_djvu))
+        continue;
+    if (ddjvu_document_decoding_error(pDoc_djvu))
+    {
+        cout<<"Cannot decode document."<<endl;
+        failed_documents.push_back(filepath);
+        return false;
+    }
+    return true;
+}
+
+void TextExtractor::destroy_doc_djvu()
+{
+    if (pDoc_djvu)
+    ddjvu_document_release(pDoc_djvu);
+    if (ctx_djvu)
+    ddjvu_context_release(ctx_djvu);
+}
+
+
+bool TextExtractor::create_doc_pdf(string filepath)
+{
+    pDoc_pdf = poppler::document::load_from_file(filepath);
+    if(pDoc_pdf == NULL)
+    {
+        cout<<"Couldn't load pdf file"<<filepath<<endl;
+        failed_documents.push_back(filepath);
+        return false;
+    }
+    return true;
+}
+
+
+
+void TextExtractor::GetLayeredText(fs::path filepath)
+{
+    char * pText_data;
+    string ext = filepath.extension();
+    if(ext == ".djvu")
+    {
+        int maxpages = 0;
+        miniexp_t r = miniexp_nil;
+        //const char *lvl = (detail) ? detail : "page";
+        const char *lvl =  "page";
+        if(create_doc_djvu(filepath))
+        {
+            maxpages = ddjvu_document_get_pagenum(pDoc_djvu);
+            for(int i = 0; i < maxpages; i++)
+            {
+                if((r = ddjvu_document_get_pagetext(pDoc_djvu, i, lvl)) == miniexp_nil)
+                {
+                    pages_without_text[filepath].push_back(i);
+                }
+                else
+                {
+                    pText_data = dopage_text_extract(r, lvl, 0);
+                    write_to_file(basedir + name_generator(filepath), pText_data);
+                    //delete [] pText_data;
+                }
+            }
+            destroy_doc_djvu();
+        }
+        //else ...
+    }
+    else if(ext == ".pdf")
+    {
+        if(create_doc_pdf(filepath))
+        {
+            int pagesNbr = pDoc_pdf->pages();
+            for (int i = 0; i < pagesNbr; ++i)
+            {
+                txt = pDoc_pdf->create_page(i)->text();
+                if(txt.length() == 0)
+                {
+                    pages_without_text[filepath].push_back(i);
+                }
+                else
+                {
+                    //cout<<txt.to_latin1().c_str();
+                    pText_data = (char *)txt.to_latin1().c_str();
+                    write_to_file(basedir + name_generator(filepath), pText_data);
+                    //delete pText_data;
+                }
+            }
+        }
+        //else ...
+    }
+    /* for(auto i: pages_without_text)
+    {
+        GetRecognizedText(i.first, i.second);
+
+    } */
+/*     else if(".docx")
+    {
+        DocxReader dr(filepath.c_str());
+        return dr.GetText();//WordData
+    } */
+/*     else if(".doc")
+    {
+
+    } */
+}
+
+
+
+//TODO: Make an accaunt of corrupted pages
+void TextExtractor::GetRecognizedText(fs::path filepath, vector<int> pageno)
+{
+    char* pPlainText;
+    string ext = filepath.extension();
+    if(ext == ".djvu")
+    {
+        if(create_doc_djvu(filepath))
+        {
+            for(auto page: pageno)
+            {
+                cout<<"Recognition for "<<filepath<<" page "<<page<<endl;
+                pPlainText = dopage_text_recognition(pDoc_djvu, page);
+                write_to_file(basedir + name_generator(filepath), pPlainText);
+                delete [] pPlainText;
+            }
+            destroy_doc_djvu();
+        }
+        //else ...
+    }
+    else if (ext == ".pdf")
+    {
+        if(create_doc_pdf(filepath))
+        {
+            for(auto page: pageno)
+            {
+                cout<<"Recognition for "<<filepath<<" page "<<page<<endl;
+                pPlainText = pdf_text_recognition(page, pDoc_pdf);
+                write_to_file(basedir + name_generator(filepath), pPlainText);
+                delete [] pPlainText;
+            }
+            //delete pDoc_djvu;
+           
+        }
+        //else ...
+    }
+}
+
+vector<fs::directory_entry> scan_from_root(string root)
+{
+    vector<fs::directory_entry> files;
+    for(const auto& p: fs::recursive_directory_iterator(root))
+    {    
+        if(is_regular_file(p) && p.path().has_extension())
+        {
+            string ext = p.path().extension();
+            if(ext == ".pdf" || ext == ".djvu")
+                files.push_back(p);
+        }
+    }
+    return files;
+}
+
+void TextExtractor::process(string rootpath)
+{
+    vector<fs::directory_entry> files = scan_from_root(rootpath);
+    for(auto f: files)
+    {
+        GetLayeredText(f.path());
+    }
+    for(auto i: pages_without_text)
+    {
+        
+        GetRecognizedText(i.first, i.second);
+
+    }
+    
 }
 
 //TODO:
 //  Zip archivate condition
-
-void TextExtractor::PutTextsToFiles(string rootpath)
-{
-    for(auto i: vecTextsNames)
-    {
-        ofstream fout;
-        fout.open(rootpath + name_generator(i.second));
-        if (!fout.is_open())
-        {
-            cout<< "Cannot open the file!" << std::endl;
-        } 
-        fout<<i.first;
-        fout.close();
-    }
-
-}
