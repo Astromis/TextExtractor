@@ -4,6 +4,8 @@
 #include <tesseract/baseapi.h>
 #include <leptonica/allheaders.h>
 
-char* gettext(char *img, size_t size);
+char* recognize_text(char *img, size_t size);
+void monitorProgress(ETEXT_DESC *monitor, int page);
+void ocrProcess(tesseract::TessBaseAPI *api, ETEXT_DESC *monitor);
 
 #endif
