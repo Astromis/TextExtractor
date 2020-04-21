@@ -17,6 +17,7 @@
 # include <sys/time.h>
 # include <sys/types.h>
 # include <unistd.h>
+#include <iostream>
 //#endif
 
 
@@ -25,12 +26,12 @@
 #include "tesseract_wp.h"
 
 /* Djvuapi events */
-void handle(int wait);
-void  die(const char *fmt, ...);
+//void handle(int wait);
+//void  die(const char *fmt, ...);
 
-void render(ddjvu_page_t *page, int pageno);
-void dopage_text_recognition(int pageno);
-char* dopage_text_extract(miniexp_t r, const char * detail, int escape);
-char* get_text_from_djvu(const char* filename, int pagenum, char* detail = "page");
+char * render(ddjvu_page_t *page, int pageno);
+char * dopage_text_recognition(ddjvu_document_t *pDoc, int pageno);
+char * dopage_text_extract(miniexp_t r, const char * detail, int escape);
+//bool get_text_from_djvu(const char* filename, int pagenum, char* detail = "page");
 
 #endif

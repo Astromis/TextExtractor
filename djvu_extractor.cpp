@@ -72,20 +72,10 @@
 # define I18N(x) (x)
 #endif
 
+using namespace std;
 
-unsigned long 
-ticks(void)
-{
-//#ifdef UNIX
-  struct timeval tv;
-  if (gettimeofday(&tv, NULL) >= 0)
-    return (unsigned long)(((tv.tv_sec & 0xfffff)*1000)+(tv.tv_usec/1000));
-//#endif
-  return 0;
-}
-
-ddjvu_context_t *ctx;
-ddjvu_document_t *doc;
+//ddjvu_context_t *ctx;
+//ddjvu_document_t *doc;
 
 unsigned long timingdata[4];
 
@@ -118,39 +108,11 @@ int tiffd = -1;
 FILE *fout = 0;
 
 
-
-/* Djvuapi events */
-
-void
-handle(int wait)
-{
-  const ddjvu_message_t *msg;
-  if (!ctx)
-    return;
-  if (wait)
-    msg = ddjvu_message_wait(ctx);
-  while ((msg = ddjvu_message_peek(ctx)))
-    {
-      switch(msg->m_any.tag)
-        {
-        case DDJVU_ERROR:
-          fprintf(stderr,"ddjvu: %s\n", msg->m_error.message);
-          if (msg->m_error.filename)
-            fprintf(stderr,"ddjvu: '%s:%d'\n", 
-                    msg->m_error.filename, msg->m_error.lineno);
-        default:
-          break;
-        }
-      ddjvu_message_pop(ctx);
-    }
-}
-
-
 void 
 die(const char *fmt, ...)
 {
   /* Handling messages might give a better error message */
-  handle(FALSE);
+  //handle(FALSE);
   /* Print */
   va_list args;
   fprintf(stderr,"ddjvu: ");
@@ -175,8 +137,8 @@ die(const char *fmt, ...)
  * @param page [in] djvulibre object
  * @param pageno 
  */
-void
-render(ddjvu_page_t *page, int pageno, char* pPlainText)
+char*
+render(ddjvu_page_t *page, int pageno)
 {
   size_t size = 0;
   char img[7000000];
@@ -189,7 +151,7 @@ render(ddjvu_page_t *page, int pageno, char* pPlainText)
   int iw = ddjvu_page_get_width(page);
   int ih = ddjvu_page_get_height(page);
   int dpi = ddjvu_page_get_resolution(page);
-  ddjvu_page_type_t type = ddjvu_page_get_type(page);
+  //ddjvu_page_type_t type = ddjvu_page_get_type(page);
   char *image = 0;
   char white = (char)0xFF;
   int rowsize;
@@ -266,56 +228,50 @@ render(ddjvu_page_t *page, int pageno, char* pPlainText)
     die(i18n("Cannot allocate image buffer for page %d"), pageno);
 
   /* Render */
-  timingdata[2] = ticks();
   if (! ddjvu_page_render(page, mode, &prect, &rrect, fmt, rowsize, image))
     memset(image, white, rowsize * rrect.h);
-  timingdata[3] = ticks();
-  if (flag_verbose)
-    if (timingdata[2] != timingdata[3])
-      fprintf(stderr,"Rendering time: %5ld ms\n",
-	      timingdata[3] - timingdata[2] );
 
     /* -------------- PNM output */
-        int i =0;
-        size_t j =0;
-        char *s = image;
-        if (style == DDJVU_FORMAT_MSBTOLSB) {
-          if (flag_verbose) 
-            fprintf(stderr,i18n("Producing PBM file.\n"));
-         
-          sprintf(img,"P4\n%d %d\n", rrect.w, rrect.h);
-        } else if (style == DDJVU_FORMAT_GREY8) {
-          if (flag_verbose) 
-            fprintf(stderr,i18n("Producing PGM file.\n"));
-          
-          sprintf(img,"P5\n%d %d\n255\n", rrect.w, rrect.h);
-        } else {
-          if (flag_verbose) 
-            fprintf(stderr,i18n("Producing PPM file.\n"));
-          
-          sprintf(img,"P6\n%d %d\n255\n", rrect.w, rrect.h);
-        }
-        
-        size = +strlen(img);
-        for (i=0; i<(int)rrect.h; i++)//s+=rowsize
-        {
-            if(i == 0) j = strlen(img); else j = i*rowsize; // passing the header of file format
-            for(;j<rowsize*(i+1);j++)
-            {
-                if(j > 7000000) printf("Acrossing beard!\n");
-                img[j] = *s;
-                s++;
+  int i =0;
+  size_t j =0;
+  char *s = image;
+  if (style == DDJVU_FORMAT_MSBTOLSB) {
+    if (flag_verbose) 
+      fprintf(stderr,i18n("Producing PBM file.\n"));
+    
+    sprintf(img,"P4\n%d %d\n", rrect.w, rrect.h);
+  } else if (style == DDJVU_FORMAT_GREY8) {
+    if (flag_verbose) 
+      fprintf(stderr,i18n("Producing PGM file.\n"));
+    
+    sprintf(img,"P5\n%d %d\n255\n", rrect.w, rrect.h);
+  } else {
+    if (flag_verbose) 
+      fprintf(stderr,i18n("Producing PPM file.\n"));
+    
+    sprintf(img,"P6\n%d %d\n255\n", rrect.w, rrect.h);
+  }
+  
+  size = +strlen(img);
+  for (i=0; i<(int)rrect.h; i++)//s+=rowsize
+  {
+      if(i == 0) j = strlen(img); else j = i*rowsize; // passing the header of file format
+      for(;j<rowsize*(i+1);j++)
+      {
+          if(j > 7000000) printf("Acrossing beard!\n");
+          img[j] = *s;
+          s++;
 
-            }
-            //printf("%d of %d\nSize: %lo\n", i,(int)rrect.h, size);
-            size += rowsize;
-        }
-
-  pPlainText = gettext(img, size);    
+      }
+      //printf("%d of %d\nSize: %lo\n", i,(int)rrect.h, size);
+      size += rowsize;
+  }
+  
+  char *  pPlainText = recognize_text(img, size);    
   /* Free */
   ddjvu_format_release(fmt);
   free(image);
-  
+  return pPlainText;
 }
 
 /**
@@ -323,31 +279,28 @@ render(ddjvu_page_t *page, int pageno, char* pPlainText)
  * 
  * @param pageno [in] page number
  */
-void dopage_text_recognition(int pageno, char* pPlainText)
+char* dopage_text_recognition(ddjvu_document_t *pDoc, int pageno)
 {
+  char* TextData;
   ddjvu_page_t *page;
   /* Decode page */
-  timingdata[0] = ticks();
-  if (! (page = ddjvu_page_create_by_pageno(doc, pageno-1)))
-    die(i18n("Cannot access page %d."), pageno);
+  if (! (page = ddjvu_page_create_by_pageno(pDoc, pageno-1)))
+  {
+      cout<<"Cannot access page ."<<pageno<<endl;
+      return false;
+  }
   while (! ddjvu_page_decoding_done(page))
-    handle(TRUE);
+    continue;
   if (ddjvu_page_decoding_error(page))
     {
-      handle(FALSE);
-      fprintf(stderr,"ddjvu: ");
-      fprintf(stderr,i18n("Cannot decode page %d."), pageno);
-      fprintf(stderr,"\n");
-      if (flag_skipcorrupted)
-        return;
-      else
-        exit(10);
+      cout<<"Cannot decode page"<<pageno<<endl;
+      return false;
     }
-  timingdata[1] = ticks();
 
   /* Render */
-  render(page, pageno, pPlainText);
+  TextData = render(page, pageno);
   ddjvu_page_release(page);
+  return TextData;
 
 }
 
@@ -358,122 +311,17 @@ void dopage_text_recognition(int pageno, char* pPlainText)
  * @param detail [in] see djvu doc
  * @param escape [in] see djvu doc
  */
-char* dopage_text_extract(miniexp_t r, const char * detail, int escape)
+char * dopage_text_extract(miniexp_t r, const char * detail, int escape)
 {
-  if (detail)
+  char * TextData;
+   if ((r = miniexp_nth(5, r)) && miniexp_stringp(r))
     {
-      miniexp_io_t io;
-      miniexp_io_init(&io);
-#ifdef miniexp_io_print7bits
-      int flags = (escape) ? miniexp_io_print7bits : 0;
-      io.p_flags = &flags;
-#else
-      io.p_print7bits = &escape;
-#endif
-      miniexp_pprint_r(&io, r, 72);
+      return (char *)miniexp_to_str(r); 
     }
-  else if ((r = miniexp_nth(5, r)) && miniexp_stringp(r))
+    else
     {
-      char *s = (char *)miniexp_to_str(r); 
-      return s;
-      if (! escape)
-      {
-        fputs(s, stdout);
-        return s;
-      }
-      else
-        {
-          unsigned char c;
-          while ((c = *(unsigned char*)s++))
-            {
-              bool esc = false;
-              if (c == '\\' || c >= 0x7f)
-                esc = true; /* non-ascii */
-              if (c < 0x20 && !strchr("\013\035\037\012", c))
-                esc = true; /* non-printable other than separators */
-              if (esc)
-                printf("\\%03o", c);
-              else
-                putc(c, stdout);
-            }
-        }
-      fputs("\n\f", stdout);
-    }
-    else printf("Page has not contain a text\n");
+      std::cout<<"Page has not contain a text"<<std::endl;
+      //return false;
+    } 
+    //return false;
 }
-
-/**
- * @brief Get the text from djvu object
- * 
- * @param filename [in] Path to file to be extracted
- * @param pagenum [in] Number of page, -1 process all pages
- * @param detail [in] defualt = "page" see djvu doc
- */
-char* get_text_from_djvu(const char* filename, int pagenum, char* detail)
-{
-  char* pPlainText;
-  int maxpages = 0;
-  miniexp_t r = miniexp_nil;
-  const char *lvl = (detail) ? detail : "page";
-
-  /* Create context and document */
-  programname = filename;
-  if (! (ctx = ddjvu_context_create("test")))
-    die(i18n("Cannot create djvu context."));
-  if (! (doc = ddjvu_document_create_by_filename(ctx, filename, TRUE)))
-    die(i18n("Cannot open djvu document '%s'."), filename);
-  while (! ddjvu_document_decoding_done(doc))
-    handle(TRUE);
-  if (ddjvu_document_decoding_error(doc))
-    die(i18n("Cannot decode document."));
-    
-  if(pagenum == -1)
-  {
-    maxpages = ddjvu_document_get_pagenum(doc);
-    for(int i = 0; i < maxpages; i++)
-    {
-        if((r = ddjvu_document_get_pagetext(doc,i,lvl)) == miniexp_nil)
-        {
-          dopage_text_recognition(i, pPlainText);
-        }
-        else pPlainText = dopage_text_extract(r, lvl, 0);
-        //handle(TRUE);
-    }
-  }
-  // if provide exact page number
-  else
-  {
-    printf("Start extracting text\n");
-    if((r = ddjvu_document_get_pagetext(doc,pagenum,lvl)) == miniexp_nil)
-    {
-      printf("Try to recognize...\n");
-      dopage_text_recognition(pagenum, pPlainText);
-    }
-      else 
-      { 
-        pPlainText = dopage_text_extract(r, lvl, 0);
-      }
-
-  } 
-    /* Release */
-  if (doc)
-    ddjvu_document_release(doc);
-  if (ctx)
-    ddjvu_context_release(ctx);
-    return pPlainText;
-}
-
-// g++ GetTextFromDjvu.cpp -ltesseract -llept -ltiff -ldjvulibre
-// TODO: Make an interface to get text in array, not console.
-/*
-int
-main(int argc, char **argv)
-{
-  int i;
-
-  inputfilename = "./test1.djvu";
-
-  get_text_from_djvu(inputfilename, 9, "page");
-
-  return 0;
-}*/ 
