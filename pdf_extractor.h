@@ -11,8 +11,7 @@
 #include "tesseract_wp.h"
 
 
-void get_text_from_pdf(const char* pathfile, int pagenum);
-char* pdf_txt_recog(int pagenum, poppler::document* doc);
+char* pdf_text_recognition(int pagenum, poppler::document* doc);
 bool img_transform(poppler::image img, char *transform_img);
 
 #endif
