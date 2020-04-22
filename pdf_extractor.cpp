@@ -28,6 +28,7 @@ bool img_transform(poppler::image img, char *transform_img)
         count += row_length;
         hptr += img.bytes_per_row();
     }
+    return true;
 }
 /**
  * @brief Recognize text from rendered pdf page
@@ -47,7 +48,7 @@ char* pdf_text_recognition(int pagenum, poppler::document* doc)
     if((pPage = doc->create_page(pagenum)) == NULL)
     {
         cout<<"Couldn't create PDF page for recognition"<<endl;
-        return false;
+        return NULL;
     }
     img = render.render_page(pPage);
     int prem_len = sprintf(temp,"P6\n%d %d\n255\n", img.width(), img.height());

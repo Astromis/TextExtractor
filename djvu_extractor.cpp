@@ -154,7 +154,7 @@ render(ddjvu_page_t *page, int pageno)
   //ddjvu_page_type_t type = ddjvu_page_get_type(page);
   char *image = 0;
   char white = (char)0xFF;
-  int rowsize;
+  unsigned int rowsize;
   //PAY ATTENTION ON THIS RAW !!!. Somewhere occure error when tesseract is breakdown.
   flag_format = 1;
   
@@ -287,14 +287,14 @@ char* dopage_text_recognition(ddjvu_document_t *pDoc, int pageno)
   if (! (page = ddjvu_page_create_by_pageno(pDoc, pageno-1)))
   {
       cout<<"Cannot access page ."<<pageno<<endl;
-      return false;
+      return NULL;
   }
   while (! ddjvu_page_decoding_done(page))
     continue;
   if (ddjvu_page_decoding_error(page))
     {
       cout<<"Cannot decode page"<<pageno<<endl;
-      return false;
+      return NULL;
     }
 
   /* Render */
@@ -313,15 +313,15 @@ char* dopage_text_recognition(ddjvu_document_t *pDoc, int pageno)
  */
 char * dopage_text_extract(miniexp_t r, const char * detail, int escape)
 {
-  char * TextData;
-   if ((r = miniexp_nth(5, r)) && miniexp_stringp(r))
-    {
-      return (char *)miniexp_to_str(r); 
-    }
-    else
-    {
-      std::cout<<"Page has not contain a text"<<std::endl;
-      //return false;
-    } 
-    //return false;
-}
+  //char * TextData;
+  if ((r = miniexp_nth(5, r)) && miniexp_stringp(r))
+  {
+    return (char *)miniexp_to_str(r); 
+  }
+  else
+  {
+    std::cout<<"Page has not contain a text"<<std::endl;
+    return NULL;
+  } 
+  //return false;
+  }

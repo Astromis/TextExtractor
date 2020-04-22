@@ -1,9 +1,9 @@
-#include "text_extractor.h"
+#include "application.hpp"
 
 int main()
 {
-    TextExtractor tx;
-    tx.process("/home/astromis/git_projects/TextExtractor/examples/");
+    Application app;
+    app.process();
     
     return 0;
 }

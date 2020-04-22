@@ -38,7 +38,7 @@ char*  recognize_text(char *img, size_t size)
         printf("Error has occured");
     }
 
-    char *outText;
+    //char *outText;
     //ETEXT_DESC *monitor = new ETEXT_DESC();
     tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
     // Initialize tesseract-ocr with English, without specifying tessdata path
@@ -51,13 +51,15 @@ char*  recognize_text(char *img, size_t size)
 
     api->SetImage(image__);
 
-    int page = 0;
+    //int page = 0;
     //std::thread t1(ocrProcess, api, monitor);
     //std::thread t2(monitorProgress, monitor, page);
     //t1.join();
     //t2.join();
     // Get OCR result
     pOutText = api->GetUTF8Text();
+    //char * pNewOut = new char;
+
     printf("OCR output:\n%s", pOutText);
 
     // Destroy used object and release memory
