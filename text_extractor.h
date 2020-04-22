@@ -12,6 +12,19 @@
 namespace fs = std::experimental::filesystem;
 
 
+struct pagecard
+{
+    pagecard(string fn, int p, string& d)
+    {
+        filepath = fn;
+        page = p;
+        data = d;
+    };
+    fs::path filepath;
+    int page;
+    string data;
+};
+
 class TextExtractor
 {
     private:
@@ -30,9 +43,9 @@ class TextExtractor
     void destroy_doc_djvu();
     bool create_doc_pdf(string filepath);
 
-
     public:
     map<fs::path, vector<int> > pages_without_text;
+    vector<pagecard> DataStore;
 
     TextExtractor();
     ~TextExtractor();
@@ -41,6 +54,12 @@ class TextExtractor
     void process(string rootpath);
 
     string GetExt(string path);
+    bool GetTextLayerDjvu(fs::path filepath);
+    bool GetTextLayerPdf(fs::path filepath);
+    bool GetRecognizedTextDjvu(fs::path filepath,vector<int>& pageno);
+    bool GetRecognizedTextPdf(fs::path filepath, vector<int>& pageno);
+
 
 };
+
 
