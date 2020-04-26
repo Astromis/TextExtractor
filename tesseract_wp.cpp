@@ -10,11 +10,12 @@ using namespace std;
 
 void monitorProgress(ETEXT_DESC *monitor, int page) {
     while (1) {
-        printf( "OCR progress: \r%3d%%", monitor[page].progress);
+        printf( "\r OCR progress: %3d%%", monitor[page].progress);
         fflush (stdout);
         if (monitor[page].progress==100)
             break;
     }
+    printf("\n");
 }
 
 void ocrProcess(tesseract::TessBaseAPI *api, ETEXT_DESC *monitor) {
@@ -39,7 +40,7 @@ char*  recognize_text(char *img, size_t size)
     }
 
     //char *outText;
-    //ETEXT_DESC *monitor = new ETEXT_DESC();
+    ETEXT_DESC *monitor = new ETEXT_DESC();
     tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
     // Initialize tesseract-ocr with English, without specifying tessdata path
     if (api->Init(NULL, "rus")) {
@@ -51,16 +52,16 @@ char*  recognize_text(char *img, size_t size)
 
     api->SetImage(image__);
 
-    //int page = 0;
-    //std::thread t1(ocrProcess, api, monitor);
-    //std::thread t2(monitorProgress, monitor, page);
-    //t1.join();
-    //t2.join();
+    int page = 0;
+    std::thread t1(ocrProcess, api, monitor);
+    std::thread t2(monitorProgress, monitor, page);
+    t1.join();
+    t2.join();
     // Get OCR result
     pOutText = api->GetUTF8Text();
     //char * pNewOut = new char;
 
-    printf("OCR output:\n%s", pOutText);
+    //printf("OCR output:\n%s", pOutText);
 
     // Destroy used object and release memory
     api->End();

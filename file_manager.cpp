@@ -1,5 +1,5 @@
 #include "file_manager.hpp"
-
+#include <cstring> 
 struct compare
 {
 	string key;
@@ -102,6 +102,26 @@ bool FileManager::write_to_file(fs::path filepath, const char* Data)
         return false;
     } 
     file<<Data;
+    file.close();
+    return true;
+}
+
+bool FileManager::write_vector(vector<fs::directory_entry> v, string fname)
+{
+    ofstream file;
+    fs::path filepath = current_location / fname;
+    file.open(filepath);
+    if (!file.is_open())
+    {
+        cout<<"Cannot open the file for writing!"<< filepath << std::endl;
+        cout<<"Check if the location exists"<<endl;
+        return false;
+    } 
+    for(auto i:v)
+    {
+
+        file<<i.path()<<endl;
+    }
     file.close();
     return true;
 }

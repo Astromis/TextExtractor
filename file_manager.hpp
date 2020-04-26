@@ -33,6 +33,7 @@ class FileManager
 
     bool write_to_file(string filename, const char* Data);
     bool write_to_file(fs::path filepath, const char* Data);
+    bool write_vector(vector<fs::directory_entry> v, string fname);
 
     vector<fs::directory_entry> find_by_ext(vector<string> extensions);
 
