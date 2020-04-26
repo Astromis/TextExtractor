@@ -12,44 +12,11 @@ TextExtractor::~TextExtractor()
     } */
 }
 
-inline string TextExtractor::GetExt(string path)
-{
-    size_t start = path.rfind(".");
-    ext = path.substr(start, path.length());
-    return ext;
-}
-
-
 /*TextExtractor::TextExtractor(char* filepath)
 {
     string sPath = (string)filepath;
 
 }*/
-
-string name_generator(string src_name)
-{
-    static int count = -1;
-    count++;
-    size_t start = src_name.rfind("/");
-    string file_name = src_name.substr(start + 1, src_name.length());
-    //file_name = file_name.substr(0, file_name.rfind("."));
-    return std::to_string(count) + "_recognized_" + file_name + ".txt"; 
-}
-
-bool write_to_file(string filename, char* pTextData)
-{
-    ofstream file;
-    file.open(filename);
-    if (!file.is_open())
-    {
-        cout<< "Cannot open the file for writing! "<< filename << std::endl;
-        return false;
-    } 
-    file<<pTextData;
-    file.close();
-    return true;
-}
-
 
 bool TextExtractor::create_doc_djvu(string filepath)
 {
@@ -114,7 +81,6 @@ bool TextExtractor::GetTextLayerDjvu(fs::path filepath)
                 pText_data = dopage_text_extract(r, lvl, 0);
                 string d = string(pText_data);
                 DataStore.push_back(pagecard(filepath, i, d));
-                //write_to_file(basedir + name_generator(filepath), pText_data);
                 delete [] pText_data;
             }
         }
@@ -130,25 +96,26 @@ bool TextExtractor::GetTextLayerDjvu(fs::path filepath)
 
 bool TextExtractor::GetTextLayerPdf(fs::path filepath)
 {
-    const char * pText_data;
     if(create_doc_pdf(filepath))
     {
         int pagesNbr = pDoc_pdf->pages();
         for (int i = 0; i < pagesNbr; ++i)
         {
-            txt = pDoc_pdf->create_page(i)->text();
-            if(txt.length() == 0)
+            poppler::page* p;
+            if((p = pDoc_pdf->create_page(i)) == NULL)
+            {
+                corrupted_pages[filepath].push_back(i);
+                continue;
+            }
+            pdf_text = p->text();
+            if(pdf_text.length() == 0)
             {
                 pages_without_text[filepath].push_back(i);
             }
             else
             {
-                //cout<<txt.to_latin1().c_str();
-                pText_data = txt.to_latin1().c_str();
-                string d = string(pText_data);
+                string d = pdf_text.to_latin1();
                 DataStore.push_back(pagecard(string(filepath.filename()), i, d));
-                //write_to_file(basedir + name_generator(filepath), pText_data);
-                //delete pText_data;
             }
         }
         return true;
@@ -193,8 +160,11 @@ bool TextExtractor::GetRecognizedTextDjvu(fs::path filepath, vector<int>& pageno
         for(auto page: pageno)
         {
             cout<<"Recognition for "<<filepath<<" page "<<page<<endl;
-            pPlainText = dopage_text_recognition(pDoc_djvu, page);
-            //write_to_file(basedir + name_generator(filepath), pPlainText);
+            if( (pPlainText = dopage_text_recognition(pDoc_djvu, page)) == NULL)
+            {
+                corrupted_pages[filepath].push_back(page);
+                continue;
+            }
             string d = string(pPlainText);
             DataStore.push_back(pagecard(string(filepath.filename()), page, d));
             delete [] pPlainText;
@@ -218,8 +188,11 @@ bool TextExtractor::GetRecognizedTextPdf(fs::path filepath, vector<int>& pageno)
         for(auto page: pageno)
         {
             cout<<"Recognition for "<<filepath<<" page "<<page<<endl;
-            pPlainText = pdf_text_recognition(page, pDoc_pdf);
-            //write_to_file(basedir + name_generator(filepath), pPlainText);
+            if( (pPlainText = pdf_text_recognition(page, pDoc_pdf)) == NULL)
+            {
+                corrupted_pages[filepath].push_back(page);
+                continue;
+            }
             string d = string(pPlainText);
             DataStore.push_back(pagecard(string(filepath.filename()), page, d));
             delete [] pPlainText;
@@ -234,7 +207,6 @@ bool TextExtractor::GetRecognizedTextPdf(fs::path filepath, vector<int>& pageno)
     }
 }
 
-//TODO: Make an accaunt of corrupted pages
 void TextExtractor::GetRecognizedText(fs::path filepath, vector<int> pageno)
 {
     string ext = filepath.extension();
@@ -246,26 +218,5 @@ void TextExtractor::GetRecognizedText(fs::path filepath, vector<int> pageno)
     {
         GetRecognizedTextPdf(filepath, pageno);
     }
-}
-
-vector<fs::directory_entry> scan_from_root(string root)
-{
-    vector<fs::directory_entry> files;
-    for(const auto& p: fs::recursive_directory_iterator(root))
-    {    
-        if(is_regular_file(p) && p.path().has_extension())
-        {
-            string ext = p.path().extension();
-            if(ext == ".pdf" || ext == ".djvu")
-                files.push_back(p);
-        }
-    }
-    return files;
-}
-
-void TextExtractor::process(string rootpath)
-{
-
-    
 }
 
