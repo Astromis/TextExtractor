@@ -20,14 +20,13 @@ string Application::name_generator(fs::path filepath)
  
 void Application::process()
 {
-    fmanager.set_basedir("examples");
-    vector<pagecard> data;
-    vector<string>  exts = {".djvu", ".pdf"};
-    
+    fmanager.set_basedir(input_dir);
+       
     vector<fs::directory_entry> files = fmanager.find_by_ext(exts);
-    /* fmanager.set_basedir("log");
+    fmanager.set_basedir("log");
     
     int save_counter = 0;
+    /*
     for(int _ = 0;  _ < files.size(); _++)
     {
         save_counter++;
@@ -59,12 +58,19 @@ void Application::process()
         string ext = f.path().extension();
         if(ext == ".djvu")
         {
-            extractor.GetTextLayerDjvu(f.path(), data);
+            if(extractor.GetTextLayerDjvu(f.path(), data))
+            {
+                save_counter++;
+            }
         }
         else if(ext == ".pdf")
         {
-            extractor.GetTextLayerPdf(f.path(), data);
+            if(extractor.GetTextLayerPdf(f.path(), data))
+            {
+                save_counter++;
+            }
         }
+        
     }
 
     for(auto i: extractor.pages_without_text)
@@ -80,7 +86,7 @@ void Application::process()
         }
     }
 
-    fmanager.set_basedir("output");
+    fmanager.set_basedir(output_dir);
 
     for(auto i: data)
     {
