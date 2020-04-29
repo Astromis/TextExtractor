@@ -40,7 +40,7 @@ class TextExtractor
     map<fs::path, vector<int> > pages_without_text;
     map<fs::path, vector<int> > corrupted_pages;
 
-    vector<pagecard> DataStore;
+    //vector<pagecard> DataStore;
     vector<string> failed_documents;
 
     TextExtractor();
@@ -48,10 +48,10 @@ class TextExtractor
     void GetLayeredText(fs::path filepath);
     void GetRecognizedText(fs::path filepath, vector<int> pageno);
 
-    bool GetTextLayerDjvu(fs::path filepath);
-    bool GetTextLayerPdf(fs::path filepath);
-    bool GetRecognizedTextDjvu(fs::path filepath,vector<int>& pageno);
-    bool GetRecognizedTextPdf(fs::path filepath, vector<int>& pageno);
+    bool GetTextLayerDjvu(fs::path filepath, vector<pagecard>& DataStore);
+    bool GetTextLayerPdf(fs::path filepath, vector<pagecard>& DataStore);
+    bool GetRecognizedTextDjvu(fs::path filepath, vector<pagecard>& DataStore, vector<int>& pageno);
+    bool GetRecognizedTextPdf(fs::path filepath, vector<pagecard>& DataStore, vector<int>& pageno);
 
 
 };

@@ -21,7 +21,7 @@ string Application::name_generator(fs::path filepath)
 void Application::process()
 {
     fmanager.set_basedir("examples");
-    
+    vector<pagecard> data;
     vector<string>  exts = {".djvu", ".pdf"};
     
     vector<fs::directory_entry> files = fmanager.find_by_ext(exts);
@@ -53,16 +53,36 @@ void Application::process()
             fmanager.write_vector(files, "unprocessed_recog.txt");
         }
     } */
+
     for(auto f: files)
     {
-        extractor.GetLayeredText(f.path());
+        string ext = f.path().extension();
+        if(ext == ".djvu")
+        {
+            extractor.GetTextLayerDjvu(f.path(), data);
+        }
+        else if(ext == ".pdf")
+        {
+            extractor.GetTextLayerPdf(f.path(), data);
+        }
     }
+
     for(auto i: extractor.pages_without_text)
     {
-        extractor.GetRecognizedText(i.first, i.second);
+        string ext = i.first.extension();
+        if(ext == ".djvu")
+        {
+            extractor.GetRecognizedTextDjvu(i.first, data, i.second);
+        }
+        else if (ext == ".pdf")
+        {
+            extractor.GetRecognizedTextPdf(i.first, data, i.second);
+        }
     }
+
     fmanager.set_basedir("output");
-    for(auto i: extractor.DataStore)
+
+    for(auto i: data)
     {
         fmanager.append_path( i.filepath.filename() );
         if(!fmanager.exist()) fmanager.create();

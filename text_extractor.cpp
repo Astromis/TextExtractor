@@ -60,7 +60,7 @@ bool TextExtractor::create_doc_pdf(string filepath)
     return true;
 }
 
-bool TextExtractor::GetTextLayerDjvu(fs::path filepath)
+bool TextExtractor::GetTextLayerDjvu(fs::path filepath, vector<pagecard>& DataStore)
 {
     char * pText_data;
     int maxpages = 0;
@@ -94,7 +94,7 @@ bool TextExtractor::GetTextLayerDjvu(fs::path filepath)
     }
 }
 
-bool TextExtractor::GetTextLayerPdf(fs::path filepath)
+bool TextExtractor::GetTextLayerPdf(fs::path filepath, vector<pagecard>& DataStore)
 {
     if(create_doc_pdf(filepath))
     {
@@ -128,7 +128,7 @@ bool TextExtractor::GetTextLayerPdf(fs::path filepath)
     
 }
 
-void TextExtractor::GetLayeredText(fs::path filepath)
+/* void TextExtractor::GetLayeredText(fs::path filepath)
 {
     string ext = filepath.extension();
     if(ext == ".djvu")
@@ -140,18 +140,18 @@ void TextExtractor::GetLayeredText(fs::path filepath)
         GetTextLayerPdf(filepath);
     }
 
-/*     else if(".docx")
+    else if(".docx")
     {
         DocxReader dr(filepath.c_str());
         return dr.GetText();//WordData
-    } */
-/*     else if(".doc")
+    }
+    else if(".doc")
     {
 
-    } */
-}
+    }
+} */
 
-bool TextExtractor::GetRecognizedTextDjvu(fs::path filepath, vector<int>& pageno)
+bool TextExtractor::GetRecognizedTextDjvu(fs::path filepath, vector<pagecard>& DataStore, vector<int>& pageno)
 {
     char* pPlainText;
 
@@ -179,7 +179,7 @@ bool TextExtractor::GetRecognizedTextDjvu(fs::path filepath, vector<int>& pageno
     }
 }
 
-bool TextExtractor::GetRecognizedTextPdf(fs::path filepath, vector<int>& pageno)
+bool TextExtractor::GetRecognizedTextPdf(fs::path filepath, vector<pagecard>& DataStore, vector<int>& pageno)
 {
     char* pPlainText;
 
@@ -207,7 +207,7 @@ bool TextExtractor::GetRecognizedTextPdf(fs::path filepath, vector<int>& pageno)
     }
 }
 
-void TextExtractor::GetRecognizedText(fs::path filepath, vector<int> pageno)
+/* void TextExtractor::GetRecognizedText(fs::path filepath, vector<int> pageno)
 {
     string ext = filepath.extension();
     if(ext == ".djvu")
@@ -219,4 +219,4 @@ void TextExtractor::GetRecognizedText(fs::path filepath, vector<int> pageno)
         GetRecognizedTextPdf(filepath, pageno);
     }
 }
-
+ */
