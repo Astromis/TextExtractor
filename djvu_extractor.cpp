@@ -135,7 +135,8 @@ die(const char *fmt, ...)
  * @brief Render page from djvu. Currently it rander to PNM only
  * 
  * @param page [in] djvulibre object
- * @param pageno 
+ * @param pageno number of page
+ * @return Char pounter on text
  */
 char*
 render(ddjvu_page_t *page, int pageno)
@@ -277,7 +278,9 @@ render(ddjvu_page_t *page, int pageno)
 /**
  * @brief Regonize text from rendered page
  * 
+ * @param pDoc pointer of DJVU documet
  * @param pageno [in] page number
+ * @return The char pointer on text, NULL otherwise
  */
 char* dopage_text_recognition(ddjvu_document_t *pDoc, int pageno)
 {

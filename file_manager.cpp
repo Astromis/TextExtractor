@@ -10,7 +10,11 @@ struct compare
 		return (i == key);
 	}
 };
-
+/**
+ * @brief Filter files by extentions
+ * @param extensions vector of string with desired extentions
+ * @return vecotor of dir_entries with filtered files
+ */ 
 vector<fs::directory_entry> FileManager::find_by_ext(vector<string> extensions)
 {
     vector<fs::directory_entry> files;
@@ -65,6 +69,9 @@ void FileManager::append_path(fs::path path)
     current_location = current_location / path;
 }
 
+/**
+ * @brief Check weather the location exists
+ */
 bool FileManager::exist()
 {
     return fs::exists(current_location);
@@ -75,6 +82,11 @@ void FileManager::create()
     fs::create_directories(current_location);
 }
 
+/**
+ * @brief write data to a file based on current location
+ * @param filename string with filename
+ * @param Data const char pointer on data that need to be writen
+ */
 bool FileManager::write_to_file(string filename, const char* Data)
 {
     fs::path filepath = current_location / filename;
@@ -90,6 +102,12 @@ bool FileManager::write_to_file(string filename, const char* Data)
     file.close();
     return true;
 }
+
+/**
+ * @brief write data to a file based on fiven location
+ * @param filepath path object of path to write that data
+ * @param Data const char pointer on data that need to be writen
+ */
 
 bool FileManager::write_to_file(fs::path filepath, const char* Data)
 {

@@ -10,6 +10,11 @@ Application::~Application()
 
 }
 
+/**
+ * @brief Generates the name for saving files
+ * @param filepath based filepath oject
+ * @return string of generated name
+ */
 string Application::name_generator(fs::path filepath)
 {
 
@@ -17,7 +22,10 @@ string Application::name_generator(fs::path filepath)
     string file_name = filepath.filename();
     return to_string(page_count) + "_extracted_" + file_name + ".txt";
 }
- 
+
+/**
+ * @brief Central function that do the job
+ */
 void Application::process()
 {
     fmanager.set_basedir(input_dir);

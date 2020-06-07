@@ -10,8 +10,7 @@ using namespace std;
  * 
  * @param img [in] poopler object of image
  * @param transform_img [in|out] buffer, in which will save pnb image
- * @return true if transformation complite
- * @return false 
+ * @return true if transformation complite, false otherwise 
  */
 bool img_transform(poppler::image img, char *transform_img)
 {

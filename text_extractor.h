@@ -11,7 +11,12 @@
 #include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
 
-
+/**
+ * @brief The structure for storing the information about pages
+ * @param filepath path object with path to the book
+ * @param page int number of page
+ * @param data string object with data
+ */
 struct pagecard
 {
     pagecard(string fn, int p, string& d)

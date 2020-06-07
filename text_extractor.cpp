@@ -18,6 +18,11 @@ TextExtractor::~TextExtractor()
 
 }*/
 
+/**
+ * @brief Create the document object of djvu file
+ * @param filepath string with path to file
+ * @return true if object successfully created, false otherwise
+ */
 bool TextExtractor::create_doc_djvu(string filepath)
 {
     if (! (ctx_djvu = ddjvu_context_create("test")))
@@ -40,6 +45,9 @@ bool TextExtractor::create_doc_djvu(string filepath)
     return true;
 }
 
+/**
+ * @brief Destroy the djvty object
+ */
 void TextExtractor::destroy_doc_djvu()
 {
     if (pDoc_djvu)
@@ -48,7 +56,11 @@ void TextExtractor::destroy_doc_djvu()
     ddjvu_context_release(ctx_djvu);
 }
 
-
+/**
+ * @brief Create the document object of pdf file
+ * @param filepath string with path to file
+ * @return true if object successfully created, false otherwise
+ */
 bool TextExtractor::create_doc_pdf(string filepath)
 {
     pDoc_pdf = poppler::document::load_from_file(filepath);
@@ -60,6 +72,12 @@ bool TextExtractor::create_doc_pdf(string filepath)
     return true;
 }
 
+/**
+ * @brief Tries to get the text that exists as a layer in the Djvu file
+ * @param filepath path object of path to the file
+ * @param DataStore reference to the vector of pagecards for storing the data
+ * @return true if extractios is successfull, false otherwise
+ */
 bool TextExtractor::GetTextLayerDjvu(fs::path filepath, vector<pagecard>& DataStore)
 {
     char * pText_data;
@@ -99,6 +117,13 @@ bool TextExtractor::GetTextLayerDjvu(fs::path filepath, vector<pagecard>& DataSt
         return false;
     }
 }
+
+/**
+ * @brief Tries to get the text that exists as a layer in the PDF file
+ * @param filepath path object of path to the file
+ * @param DataStore reference to the vector of pagecards for storing the data
+ * @return true if extractios is successfull, false otherwise
+ */
 
 bool TextExtractor::GetTextLayerPdf(fs::path filepath, vector<pagecard>& DataStore)
 {
@@ -158,6 +183,13 @@ bool TextExtractor::GetTextLayerPdf(fs::path filepath, vector<pagecard>& DataSto
     }
 } */
 
+/**
+ * @brief Tries to recognize the text from the Djvu file
+ * @param filepath path object of path to the file
+ * @param DataStore reference to the vector of pagecards for storing the data
+ * @param pageno the int vector of pages that need to be recognized
+ * @return true if recognition is successfull, false otherwise
+ */
 bool TextExtractor::GetRecognizedTextDjvu(fs::path filepath, vector<pagecard>& DataStore, vector<int>& pageno)
 {
     char* pPlainText;
@@ -186,6 +218,13 @@ bool TextExtractor::GetRecognizedTextDjvu(fs::path filepath, vector<pagecard>& D
     }
 }
 
+/**
+ * @brief Tries to recognize the text from the PDF file
+ * @param filepath path object of path to the file
+ * @param DataStore reference to the vector of pagecards for storing the data
+ * @param pageno the int vector of pages that need to be recognized
+ * @return true if recognition is successfull, false otherwise
+ */
 bool TextExtractor::GetRecognizedTextPdf(fs::path filepath, vector<pagecard>& DataStore, vector<int>& pageno)
 {
     char* pPlainText;
