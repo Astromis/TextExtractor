@@ -21,9 +21,10 @@ string Application::name_generator(fs::path filepath)
 void Application::process()
 {
     fmanager.set_basedir(input_dir);
-       
+    cout<<"Scanning directories..."<<endl;
     vector<fs::directory_entry> files = fmanager.find_by_ext(exts);
-    fmanager.set_basedir("log");
+    cout<<"Scanning finished."<<endl;
+    //fmanager.set_basedir("log");
     
     int save_counter = 0;
     /*
@@ -52,16 +53,18 @@ void Application::process()
             fmanager.write_vector(files, "unprocessed_recog.txt");
         }
     } */
-
+    int counter = 1;
     for(auto f: files)
     {
+        cout<<"Process "<<counter<<"/"<<files.size()<<" "<<f.path()<<endl;
         string ext = f.path().extension();
         if(ext == ".djvu")
         {
             if(extractor.GetTextLayerDjvu(f.path(), data))
             {
-                save_counter++;
+                save_counter++;  
             }
+            counter++;
         }
         else if(ext == ".pdf")
         {
@@ -69,11 +72,14 @@ void Application::process()
             {
                 save_counter++;
             }
+            counter++;
         }
+        //if(counter == 1000) break;
         
     }
+    cout<<endl;
 
-    for(auto i: extractor.pages_without_text)
+    /* for(auto i: extractor.pages_without_text)
     {
         string ext = i.first.extension();
         if(ext == ".djvu")
@@ -84,7 +90,7 @@ void Application::process()
         {
             extractor.GetRecognizedTextPdf(i.first, data, i.second);
         }
-    }
+    } */
 
     fmanager.set_basedir(output_dir);
 

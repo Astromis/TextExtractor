@@ -42,7 +42,7 @@ FileManager::~FileManager()
 
 void FileManager::set_basedir(fs::path root)
 {
-    basedir = workdir / root;
+    basedir = root;
     if(!fs::exists(basedir))
     {
         fs::create_directories(basedir);

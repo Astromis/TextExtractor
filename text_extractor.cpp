@@ -52,7 +52,7 @@ void TextExtractor::destroy_doc_djvu()
 bool TextExtractor::create_doc_pdf(string filepath)
 {
     pDoc_pdf = poppler::document::load_from_file(filepath);
-    if(pDoc_pdf == NULL)
+    if(pDoc_pdf == nullptr)
     {
         cout<<"Couldn't load pdf file"<<filepath<<endl;
         return false;
@@ -77,12 +77,18 @@ bool TextExtractor::GetTextLayerDjvu(fs::path filepath, vector<pagecard>& DataSt
                 pages_without_text[filepath].push_back(i);
             }
             else
-            {
+            { 
                 pText_data = dopage_text_extract(r, lvl, 0);
+                if(pText_data == NULL)
+                {
+                    pages_without_text[filepath].push_back(i);
+                    continue;
+                }
                 string d = string(pText_data);
                 DataStore.push_back(pagecard(filepath, i, d));
-                delete [] pText_data;
-            }
+                //The segfault is occures, when next uncommented
+                //delete [] pText_data;
+             } 
         }
         destroy_doc_djvu();
         return true;
@@ -102,7 +108,8 @@ bool TextExtractor::GetTextLayerPdf(fs::path filepath, vector<pagecard>& DataSto
         for (int i = 0; i < pagesNbr; ++i)
         {
             poppler::page* p;
-            if((p = pDoc_pdf->create_page(i)) == NULL)
+            nullptr_t t;
+            if((p = pDoc_pdf->create_page(i)) == t)
             {
                 corrupted_pages[filepath].push_back(i);
                 continue;
