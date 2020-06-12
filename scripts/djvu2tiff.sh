@@ -4,7 +4,7 @@
 i=1
 
 # number of pages (392)
-while [ $i -ne 392 ]
+while [ $i -ne 10 ]
 do
 ddjvu -page=$i -format=tiff ../examples/test_without_text.djvu $i.tiff
 #pnmtojpeg $i.pnm > $i.jpg
