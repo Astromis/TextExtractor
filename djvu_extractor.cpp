@@ -136,14 +136,14 @@ die(const char *fmt, ...)
  * 
  * @param page [in] djvulibre object
  * @param pageno number of page
- * @return Char pounter on text
+ * @param img pointer for storing rendered image
+ * @return size of the picture, 0 otherwise
  */
-char*
-render(ddjvu_page_t *page, int pageno)
+unsigned int
+render(ddjvu_page_t *page, int pageno, char * &img)
 {
   size_t size = 0;
-  char img[7000000];
-  
+
   ddjvu_rect_t prect;
   ddjvu_rect_t rrect;
   ddjvu_format_style_t style;
@@ -232,7 +232,9 @@ render(ddjvu_page_t *page, int pageno)
   if (! ddjvu_page_render(page, mode, &prect, &rrect, fmt, rowsize, image))
     memset(image, white, rowsize * rrect.h);
 
-    /* -------------- PNM output */
+  
+  /* -------------- PNM output */
+  img = (char*)malloc(100 + rrect.h * rowsize);
   int i =0;
   size_t j =0;
   char *s = image;
@@ -254,25 +256,21 @@ render(ddjvu_page_t *page, int pageno)
   }
   
   size = +strlen(img);
-  for (i=0; i<(int)rrect.h; i++)//s+=rowsize
-  {
-      if(i == 0) j = strlen(img); else j = i*rowsize; // passing the header of file format
-      for(;j<rowsize*(i+1);j++)
-      {
-          if(j > 7000000) printf("Acrossing beard!\n");
-          img[j] = *s;
-          s++;
 
-      }
-      //printf("%d of %d\nSize: %lo\n", i,(int)rrect.h, size);
-      size += rowsize;
+  for (i=0; i<(int)rrect.h; i++)
+  {
+    // passing the header of file format
+    if(i == 0) j = strlen(img); else j = i*rowsize; 
+    for(;j<rowsize*(i+1);j++)
+    {
+      img[j] = *s;
+      s++;
+    }
+    size += rowsize;
   }
-  
-  char *  pPlainText = recognize_text(img, size);    
-  /* Free */
   ddjvu_format_release(fmt);
   free(image);
-  return pPlainText;
+  return size;
 }
 
 /**
@@ -301,7 +299,16 @@ char* dopage_text_recognition(ddjvu_document_t *pDoc, int pageno)
     }
 
   /* Render */
-  TextData = render(page, pageno);
+  char* image = NULL;
+  unsigned int img_size;
+  if((img_size = render(page, pageno, image)) == 0)
+  {
+    printf("Page of djvy isn't renered into a picture\n");
+    return NULL;
+  }
+
+  TextData = recognize_text(image, img_size);    
+  free(image);
   ddjvu_page_release(page);
   return TextData;
 
