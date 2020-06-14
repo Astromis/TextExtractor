@@ -137,9 +137,107 @@ bool FileManager::write_vector(vector<fs::directory_entry> v, string fname)
     } 
     for(auto i:v)
     {
-
         file<<i.path()<<endl;
     }
     file.close();
     return true;
+}
+
+bool FileManager::write_pages_without_text(map<fs::path, vector<int> > pages_without, string fname)
+{
+    ofstream file;
+    fs::path filepath = current_location / fname;
+    file.open(filepath);
+    if (!file.is_open())
+    {
+        cout<<"Cannot open the file for writing!"<< filepath << std::endl;
+        cout<<"Check if the location exists"<<endl;
+        return false;
+    } 
+    string instance;
+    for(auto doc: pages_without)
+    {
+        instance = doc.first.string() + "|";
+        for(auto page_nuber: doc.second)
+        {
+            instance += to_string(page_nuber) + ",";
+        }
+        instance += "\n";
+        file<<instance;
+    }
+    file.close();
+    return true;
+}
+
+//template <class Container>
+void split(const std::string& str, vector<string>& cont, char delim = ' ')
+{
+    std::stringstream ss(str);
+    std::string token;
+    while (std::getline(ss, token, delim)) {
+        cont.push_back(token);
+    }
+}
+
+bool FileManager::read_pages_without_text(map<fs::path, vector<int> >& pages_without, string fname)
+{
+    ifstream file;
+    fs::path filepath = current_location / fname;
+    file.open(filepath);
+    string line;
+    vector<string> fname_pages;
+    vector<string> pages;
+    while(getline(file, line))
+    {
+        split(line, fname_pages, '|');
+        split(fname_pages[1], pages, ',');
+        for(auto page: pages)
+        {
+            pages_without[fname_pages[0]].push_back(stoi(page));
+        }
+        fname_pages.clear();
+        pages.clear();
+    }
+    file.close();
+    return true;
+}
+
+bool FileManager::read_vector(vector<fs::directory_entry> v, string fname)
+{
+    ifstream file;
+    fs::path filepath = current_location / fname;
+    file.open(filepath);
+    string line;
+    while(getline(file, line))
+    {
+        v.push_back(fs::directory_entry(line));
+    }
+    file.close();
+    return true;
+}
+
+int FileManager::write_int(int value, string fname)
+{
+    ofstream file;
+    fs::path filepath = current_location / fname;
+    file.open(filepath);
+    file<<to_string(value);
+    file.close();
+    return true;
+}
+
+int FileManager::read_int(string fname)
+{
+    string value;
+    ifstream file;
+    fs::path filepath = current_location / fname;
+    file.open(filepath, ios::in);
+    if (!file.is_open())
+    {
+        cout<<"Cannot open the file for writing!"<< filepath << std::endl;
+        cout<<"Check if the location exists"<<endl;
+        return false;
+    } 
+    file>>value;
+    return atoi(value.c_str());
 }
