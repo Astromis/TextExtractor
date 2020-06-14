@@ -1,8 +1,12 @@
 #include "docx_reader.h"
 #include "iostream"
+#include <cwctype>
+#include <clocale>
+#include <locale>
 
-DocxReader::DocxReader(const char *fpath, string reg):Zip(fpath)
+DocxReader::DocxReader(const char *fpath, wstring reg):Zip(fpath)
 {
+    setlocale(LC_ALL, "");
     re.assign(reg);
     //DocxReader::filepath = fpath;
 
@@ -18,29 +22,30 @@ DocxReader::~DocxReader()
 
 char*  DocxReader::GetText()//string &data
 {
-    char ** data;
+    char * data;
     ReadData("word/document.xml", data);
-    cout<<*data;
-    //ParseXml(data);
+    //cout<<*data;
+    string d((const char * )data);
+    ParseXml(d);
     //It will able to done with regexp, because parsing xml is hard task for my brain.
-    //Probably regexp <w:t[А-Яа-яA-Za-z0-9 > \":=,.;]+</w:t>
+    //Probably regexp <w:t[\w\s\d\b > \":=,.;-]+</w:t>
     // https://eax.me/cpp-regex/
     // https://eax.me/regular-expr/
 }
 
 void DocxReader::ParseXml(string& data)
 {
-    smatch m;
-    string tmp = (string)contents;
+    wsmatch m;
+    wstring tmp = converter.from_bytes(string(data));
 
     /* regex_search(data, m, re);
     for (auto x:m) std::cout << x << "test ";
     std::cout << std::endl; */
-    while (regex_search (data, m, re))
+    while (regex_search (tmp, m, re))
     {
-        for (auto x:m) std::cout << x << " ";
-        std::cout << std::endl;
-        //data = m.suffix().str();
+        for (auto x:m) cout << converter.to_bytes(x) << " ";
+        cout<<endl;
+        tmp = m.suffix().str();
     }
     
     //s = m.suffix().str()
@@ -52,7 +57,7 @@ void DocxReader::ParseXml(string& data)
         std::cout << xIt-> << endl; */
 }
 
-void DocxReader::SetRegExp(string regex)
+void DocxReader::SetRegExp(wstring regex)
 {
     re.assign(regex);
 }

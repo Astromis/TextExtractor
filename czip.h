@@ -22,7 +22,7 @@ class Zip
         Zip();
         Zip(const char* fname);
         ~Zip();
-        void ReadData(char* cfname, char**  data);
+        void ReadData(char* cfname, char*&  data);
         // Empty
         void Create(char fname);
         int Find(char* fname);
